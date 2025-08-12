@@ -12,8 +12,8 @@
             font-family: 'Arial', sans-serif;
             background-color: #0b1a13;
             background-image: radial-gradient(circle at center, rgba(0, 255, 0, 0.08) 0%, rgba(11, 26, 19, 0.85) 70%),
-                             linear-gradient(135deg, #0b1a13 0%, #1f4229 50%, #15381f 100%);
-            
+                                             linear-gradient(135deg, #0b1a13 0%, #1f4229 50%, #15381f 100%);
+                               
             color: #e0e0e0;
             display: flex;
             justify-content: center;
@@ -36,7 +36,6 @@
             width: 100%;
             height: 100%;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="rgba(0, 200, 0, 0.08)" stroke-width="0.5"><path d="M0 20L20 0M-5 25L15 -5M5 25L25 5"/></svg>');
-            
             background-size: 20px 20px;
             opacity: 0.8;
             pointer-events: none;
@@ -76,7 +75,6 @@
         .timer-button:hover {
             background-color: #0056b3;
         }
-        /* pressed 3D effect */
         .timer-button:active {
             transform: translateY(3px);
             box-shadow: 0 2px 0 rgba(0,0,0,0.3);
@@ -90,7 +88,6 @@
             background-color: #a71d2a;
         }
 
-        /* style for reset state (distinct) */
         .timer-button.reset {
             background-color: #ffc107;
             color: #0d1a26;
@@ -109,10 +106,9 @@
             padding: 8px 12px;
             color: #00eaff;
             user-select: none;
-            /* เพิ่มเอฟเฟกต์เรืองแสง */
             box-shadow: inset 0 0 10px rgba(0, 234, 255, 0.6), 0 0 10px rgba(0, 234, 255, 0.4);
         }
-        
+                               
         .game-score {
             margin-bottom: 15px;
             text-align: center;
@@ -147,7 +143,6 @@
             background-color: #0d1a26;
             color: #00eaff;
             user-select: auto;
-            /* เพิ่มเอฟเฟกต์เรืองแสง */
             box-shadow: inset 0 0 10px rgba(0, 234, 255, 0.6), 0 0 10px rgba(0, 234, 255, 0.4);
             box-sizing: border-box;
             display: flex;
@@ -168,7 +163,6 @@
             flex-wrap: nowrap;
             position: relative;
             gap: 30px;
-            /* ปรับเส้นขอบให้มีเรืองแสง */
             border: 1px solid rgba(0, 234, 255, 0.3);
             box-shadow: 0 0 20px rgba(0, 234, 255, 0.1);
         }
@@ -198,9 +192,9 @@
             font-size: 1.2em;
             padding: 8px 15px;
             border-radius: 10px;
-            border: 2px solid #00eaff;     /* ขอบสีฟ้า */
-            background-color: #0d1a26;     /* พื้นหลังเข้ม */
-            color: #00eaff;                  /* ตัวหนังสือสีฟ้า */
+            border: 2px solid #00eaff;
+            background-color: #0d1a26;
+            color: #00eaff;
             text-align: center;
             width: 80%;
             max-width: 100%;
@@ -208,8 +202,8 @@
             margin-bottom: 15px;
             user-select: none;
             box-shadow:
-              0 0 8px #00eaff,           /* แสงรอบขอบ */
-              inset 0 0 5px rgba(0, 234, 255, 0.6); /* แสงภายใน */
+              0 0 8px #00eaff,
+              inset 0 0 5px rgba(0, 234, 255, 0.6);
             transition: box-shadow 0.3s ease;
         }
 
@@ -219,7 +213,7 @@
               0 0 12px #00eaff,
               inset 0 0 8px rgba(0, 234, 255, 0.8);
         }
-        
+                               
         .divider {
             width: 2px;
             background-color: rgba(255, 255, 255, 0.2);
@@ -238,7 +232,6 @@
             color: #00eaff;
             user-select: none;
             margin-bottom: 20px;
-            /* เพิ่มเอฟเฟกต์เรืองแสง */
             box-shadow: inset 0 -6px 15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 234, 255, 0.3);
             text-shadow: 0 0 15px #00eaff;
         }
@@ -282,7 +275,7 @@
             transform: scale(1.1);
             box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 255, 255, 0.3);
         }
-        
+                               
         .ball:active {
             transform: scale(0.95);
         }
@@ -316,7 +309,6 @@
             max-width: 1200px;
         }
 
-        /* --- ปรับปรุงปุ่มควบคุมใหม่ --- */
         button {
             border: none;
             padding: 12px 25px;
@@ -329,7 +321,7 @@
             min-width: 120px;
             position: relative;
         }
-        
+                               
         .reset-button {
             background: linear-gradient(145deg, #ff6b6b, #ff0000);
             color: white;
@@ -377,7 +369,6 @@
             transform: translateY(3px);
             box-shadow: 0 2px 0 #4f5a9e;
         }
-        /* --- สิ้นสุดการปรับปรุงปุ่ม --- */
 
         .diff-container {
             display: flex;
@@ -408,23 +399,59 @@
             font-size: 2.2em;
             line-height: 60px;
             text-align: center;
-            /* เพิ่มเอฟเฟกต์เรืองแสง */
             box-shadow: inset 0 0 10px rgba(0, 234, 255, 0.6), 0 0 10px rgba(0, 234, 255, 0.4);
             user-select: none;
             display: inline-block;
             vertical-align: middle;
         }
-
-        @media (max-width: 1024px) {
-            .ball {
-                width: 45px;
-                height: 45px;
-                font-size: 1em;
+        
+        @media (max-width: 1200px) {
+            .scoreboard {
+                gap: 15px;
             }
-            .player {
-                width: 45%;
+            .score {
+                font-size: 6em;
+            }
+            .player-name input {
+                font-size: 1.1em;
             }
         }
+
+        @media (max-width: 1024px) {
+            .scoreboard {
+                gap: 15px;
+                padding: 20px 15px 25px 15px;
+            }
+            .score {
+                font-size: 5em;
+                padding: 15px 0;
+            }
+            .player-name input {
+                font-size: 1em;
+                padding: 6px 12px;
+            }
+            .ball {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9em;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 1em;
+                min-width: 100px;
+            }
+            .game-score h2 {
+                font-size: 1.4em;
+            }
+            .game-score input,
+            .diff-box {
+                width: 50px;
+                height: 50px;
+                font-size: 2em;
+                line-height: 50px;
+            }
+        }
+
         @media (max-width: 600px) {
             .scoreboard {
                 flex-wrap: wrap;
@@ -433,6 +460,9 @@
             .player {
                 width: 100%;
                 margin-bottom: 25px;
+            }
+            .divider {
+                display: none;
             }
             .diff-container {
                 margin: 20px auto;
@@ -447,6 +477,9 @@
                 font-size: 1em;
                 width: 45px;
                 height: 45px;
+            }
+            .finish-undo-container {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -524,10 +557,28 @@
     </div>
 
     <script>
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioContext = null;
+        let isAudioInitialized = false;
+        
+        function initAudio() {
+            if (isAudioInitialized) return;
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                isAudioInitialized = true;
+                console.log("AudioContext initialized!");
+            } catch(e) {
+                console.error("Web Audio API is not supported in this browser:", e);
+            }
+        }
+        
+        document.addEventListener('touchstart', initAudio, { once: true });
+        document.addEventListener('click', initAudio, { once: true });
         
         function createSound(frequency, duration, type) {
-            if (!audioContext) return;
+            if (!audioContext) {
+                console.warn("AudioContext not initialized. Tap the screen first.");
+                return;
+            }
             
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -560,7 +611,7 @@
                 createSound(220, 0.1, 'sine');
             }
         }
-        
+                               
         let score1 = 0;
         let score2 = 0;
         let scoreHistory = [];
@@ -569,28 +620,26 @@
         let startTimestamp = null;
         let timerState = 'start';
 
-        // Event Listeners for all buttons
         document.getElementById('timer-btn').addEventListener('click', () => {
             playControlSound('timer');
             startStopTimer();
         });
-        
+                               
         document.querySelector('.reset-button').addEventListener('click', () => {
             playControlSound('reset');
             resetAllScores();
         });
-        
+                               
         document.querySelector('.finish-button').addEventListener('click', () => {
             playControlSound('finish');
             finishGame();
         });
-        
+                               
         document.querySelector('.undo-button').addEventListener('click', () => {
             playControlSound('undo');
             undoLast();
         });
-        
-        // Loop through all score balls and add the click sound
+                               
         const scoreBalls = document.querySelectorAll('.balls .ball');
         scoreBalls.forEach(ball => {
             ball.addEventListener('click', playClickSound);
