@@ -8,19 +8,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             color: #e0e0e0;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            /* แก้ไข: ปรับความสูงให้เหมาะสมและเพิ่มพื้นที่ด้านล่าง */
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px 1vw 40px; /* แก้ไข: เพิ่ม padding ด้านล่าง */
             flex-direction: column;
-            overflow: hidden;
-            touch-action: manipulation;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 1vw;
             box-sizing: border-box;
             position: relative;
             background-image: url('Snooker BG/PhotoBG.jpg');
@@ -99,7 +101,6 @@
         }
 
         .game-score {
-            margin-bottom: 15px;
             text-align: center;
             display: flex;
             justify-content: center;
@@ -107,6 +108,7 @@
             width: 100%;
             max-width: 1200px;
             font-family: 'Roboto Mono', monospace;
+            margin-bottom: 15px;
         }
 
         .game-score > div {
@@ -154,6 +156,7 @@
             gap: 30px;
             border: 1px solid rgba(0, 234, 255, 0.3);
             box-shadow: 0 0 20px rgba(0, 234, 255, 0.1);
+            margin-bottom: 15px;
         }
 
         .player {
@@ -293,9 +296,9 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: nowrap;
-            margin-top: 12px;
             width: 100%;
             max-width: 1200px;
+            padding-bottom: 20px;
         }
 
         button {
@@ -408,13 +411,23 @@
         /* โค้ดที่ปรับปรุงสำหรับ iPad ในแนวนอน */
         @media (max-width: 1366px) and (orientation: landscape) {
             body {
-                padding-top: 10vh;
-                padding-bottom: 10vh; /* แก้ไข: เพิ่มพื้นที่ด้านล่างให้มากขึ้น */
-                height: auto;
+                padding-top: 15vh;
+                padding-bottom: 15vh;
+                justify-content: space-between;
                 min-height: 100vh;
+            }
+            .timer-container {
+                position: fixed;
+                top: 3vh;
+                left: 3vw;
+            }
+            .game-score {
+                margin-top: 0;
+                margin-bottom: 2vh;
             }
             .scoreboard {
                 gap: 15px;
+                margin-bottom: 2vh;
             }
             .player {
                 width: 40%;
@@ -423,7 +436,8 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 10px;
-                margin-top: 20px;
+                margin-top: 10px;
+                padding-bottom: 3vh;
             }
             .finish-undo-container button {
                 min-width: 100px;
@@ -434,19 +448,35 @@
             }
         }
         @media (max-width: 600px) {
+            body {
+                padding: 15px 1vw 30px;
+                justify-content: flex-start;
+            }
+            .timer-container {
+                position: static;
+                margin-bottom: 15px;
+                flex-direction: column;
+            }
+            .timer-button {
+                min-width: 200px;
+            }
             .scoreboard {
                 flex-wrap: wrap;
                 justify-content: center;
+                margin-bottom: 10px;
             }
             .player {
                 width: 100%;
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }
             .diff-container {
-                margin: 20px auto;
+                margin: 15px auto;
+            }
+            .game-score {
+                margin-bottom: 10px;
             }
             .game-score > div {
-                margin: 0 15px;
+                margin: 0 10px;
             }
             .score {
                 font-size: 4em;
@@ -456,13 +486,9 @@
                 width: 45px;
                 height: 45px;
             }
-            .timer-container {
-                position: static;
-                margin-bottom: 20px;
-                flex-direction: column;
-            }
-            .timer-button {
-                min-width: 200px;
+            .finish-undo-container {
+                margin-top: 10px;
+                padding-bottom: 10px;
             }
         }
     </style>
