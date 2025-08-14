@@ -29,7 +29,7 @@
             background-repeat: no-repeat;
         }
 
-        /* เพิ่มโค้ดนี้เพื่อแก้ไขปัญหาบน iOS/iPadOS */
+        /* แก้ไขปัญหา background-attachment บน iOS/iPadOS */
         @media only screen and (max-device-width: 1366px) {
             body {
                 background-attachment: scroll !important;
@@ -191,16 +191,16 @@
             margin-bottom: 15px;
             user-select: none;
             box-shadow:
-              0 0 8px #00eaff,
-              inset 0 0 5px rgba(0, 234, 255, 0.6);
+                0 0 8px #00eaff,
+                inset 0 0 5px rgba(0, 234, 255, 0.6);
             transition: box-shadow 0.3s ease;
         }
 
         .player-name input:focus {
             outline: none;
             box-shadow:
-              0 0 12px #00eaff,
-              inset 0 0 8px rgba(0, 234, 255, 0.8);
+                0 0 12px #00eaff,
+                inset 0 0 8px rgba(0, 234, 255, 0.8);
         }
         
         .divider {
@@ -404,6 +404,35 @@
                 width: 45%;
             }
         }
+        
+        /* แก้ไขหน้าจอแนวนอนบน iPad */
+        @media (max-width: 1366px) and (orientation: landscape) {
+            body {
+                height: auto;
+                min-height: 100vh;
+            }
+            .scoreboard {
+                gap: 15px; 
+            }
+            .player {
+                width: 40%;
+            }
+            .finish-undo-container {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .finish-undo-container button {
+                min-width: 100px;
+                padding: 10px 20px;
+            }
+            .score {
+                font-size: 8em;
+            }
+            .diff-container {
+                margin: 0 5px;
+            }
+        }
         @media (max-width: 600px) {
             .scoreboard {
                 flex-wrap: wrap;
@@ -426,6 +455,14 @@
                 font-size: 1em;
                 width: 45px;
                 height: 45px;
+            }
+            .timer-container {
+                position: static;
+                margin-bottom: 20px;
+                flex-direction: column;
+            }
+            .timer-button {
+                min-width: 200px;
             }
         }
     </style>
@@ -510,7 +547,7 @@
         function findFemaleVoice() {
             if (femaleVoice) return;
             const voices = synth.getVoices();
-            femaleVoice = voices.find(voice => 
+            femaleVoice = voices.find(voice =>
                 voice.name.includes('Google US English') ||
                 voice.name.includes('Microsoft Zira')
             );
@@ -701,5 +738,50 @@
         }
 
         function updateDiff() {
-            const diff = Math.abs(score1 -
-
+            const diff = Math.abs(score1 - score2);
+            document.getElementById('diff').textContent = diff;
+        }
+        
+        function finishGame() {
+            if (score1 > score2) {
+                document.getElementById('player1-game-total').value = parseInt(document.getElementById('player1-game-total').value) + 1;
+            } else if (score2 > score1) {
+                document.getElementById('player2-game-total').value = parseInt(document.getElementById('player2-game-total').value) + 1;
+            }
+            resetAllScores();
+        }
+        
+        function startStopTimer() {
+            const timerBtn = document.getElementById('timer-btn');
+            const timerDisplay = document.getElementById('timer-display');
+            
+            if (timerState === 'start') {
+                startTimestamp = Date.now();
+                timerInterval = setInterval(() => {
+                    const elapsedTime = Date.now() - startTimestamp;
+                    const totalSeconds = Math.floor(elapsedTime / 1000);
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    const seconds = totalSeconds % 60;
+                    
+                    const formattedTime = [
+                        hours,
+                        minutes,
+                        seconds
+                    ].map(v => v < 10 ? '0' + v : v).join(':');
+                    
+                    timerDisplay.textContent = formattedTime;
+                }, 1000);
+                timerState = 'stop';
+                timerBtn.textContent = 'Stop Time';
+                timerBtn.classList.add('end');
+            } else {
+                clearInterval(timerInterval);
+                timerState = 'start';
+                timerBtn.textContent = 'Start Time';
+                timerBtn.classList.remove('end');
+            }
+        }
+    </script>
+</body>
+</html>
