@@ -22,7 +22,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2vh 1vw;
+            padding: 2vh 1vw 1vh;
             box-sizing: border-box;
             position: relative;
             background-image: url('Snooker BG/PhotoBG.jpg');
@@ -126,8 +126,10 @@
             font-family: 'Share Tech Mono', monospace;
             font-size: 2.5em;
             text-align: center;
-            width: 5vw;
-            height: 5vw;
+            width: 5rem;
+            height: 5rem;
+            min-width: 5rem;
+            min-height: 5rem;
             padding: 8px;
             border-radius: 8px;
             border: 2px solid #00eaff;
@@ -145,7 +147,7 @@
         .scoreboard {
             background-color: rgba(28, 70, 45, 0.8);
             border-radius: 20px;
-            padding: 3vh 2.5vw;
+            padding: 3.5vh 2.5vw;
             width: 96%;
             max-width: 1200px;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
@@ -214,12 +216,13 @@
             border-radius: 1px;
         }
 
+        /* ปรับขนาดฟอนต์ของคะแนนผู้เล่น */
         .score {
             font-family: 'Share Tech Mono', monospace;
-            font-size: 10em;
+            font-size: 18vh;
             background-color: #0d1a26;
             border-radius: 12px;
-            padding: 2.5vh 0;
+            padding: 1.5vh 0;
             width: 100%;
             color: #00eaff;
             user-select: none;
@@ -247,14 +250,14 @@
         }
 
         .ball {
-            width: 4vw;
-            height: 4vw;
+            width: 3.8vw;
+            height: 3.8vw;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: bold;
             color: white;
             cursor: pointer;
@@ -295,7 +298,7 @@
             display: flex;
             justify-content: center;
             gap: 1.5vw;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             width: 100%;
             max-width: 1200px;
             margin-top: 2vh;
@@ -408,93 +411,56 @@
                 width: 45%;
             }
             .score {
-                font-size: 7em;
+                font-size: 10em;
             }
         }
 
         /* ปรับปรุงการจัดวางสำหรับ iPad ในแนวนอน */
         @media (max-width: 1366px) and (orientation: landscape) {
             body {
-                padding-top: 15vh;
-                padding-bottom: 15vh;
-                justify-content: space-between;
+                padding-top: 5vh;
+                padding-bottom: 5vh;
+                justify-content: flex-start;
                 min-height: 100vh;
-            }
-            .timer-container {
-                position: fixed;
-                top: 3vh;
-                left: 3vw;
-            }
-            .game-score {
-                margin-top: 0;
-                margin-bottom: 2vh;
             }
             .scoreboard {
                 gap: 15px;
-                margin-bottom: 2vh;
-            }
-            .player {
-                width: 40%;
-            }
-            .finish-undo-container {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-                margin-top: 2vh;
-                padding-bottom: 3vh;
-            }
-            .finish-undo-container button {
-                min-width: 100px;
-                padding: 1vh 2vw;
+                padding: 4vh 2.5vw;
             }
             .score {
-                font-size: 6em;
+                font-size: 12vh;
             }
         }
 
-        /* ปรับปรุงการจัดวางสำหรับหน้าจอขนาดเล็ก */
+        /* ปรับปรุงการจัดวางสำหรับหน้าจอขนาดเล็ก (มือถือ) */
         @media (max-width: 600px) {
             body {
                 padding: 2vh 1vw 4vh;
                 justify-content: flex-start;
             }
-            .timer-container {
-                position: static;
-                margin-bottom: 2vh;
-                flex-direction: column;
-            }
-            .timer-button {
-                min-width: 200px;
-            }
             .scoreboard {
-                flex-wrap: wrap;
-                justify-content: center;
-                margin-bottom: 2vh;
-            }
-            .player {
-                width: 100%;
-                margin-bottom: 2vh;
-            }
-            .diff-container {
-                margin: 2vh auto;
-            }
-            .game-score {
-                margin-bottom: 2vh;
-            }
-            .game-score > div {
-                margin: 0 1vw;
+                padding: 3vh 2.5vw;
             }
             .score {
-                font-size: 4em;
+                font-size: 10vh;
             }
-            .ball {
-                font-size: 1em;
-                width: 6vw;
-                height: 6vw;
+            
+            .game-score input {
+                font-size: 2em;
+                width: 4rem;
+                height: 4rem;
             }
+
             .finish-undo-container {
-                margin-top: 2vh;
-                padding-bottom: 2vh;
+                gap: 1vw;
+            }
+
+            button {
+                padding: 1.2vh 1.5vw;
+                font-size: 0.9em;
+                min-width: 90px;
+                flex-basis: 30%;
+                max-width: 120px;
             }
         }
     </style>
@@ -616,8 +582,8 @@
                 speech.voice = femaleVoice;
                 speech.lang = 'en-US';
                 speech.volume = 1;
-                speech.rate = rate; 
-                speech.pitch = pitch; 
+                speech.rate = rate;
+                speech.pitch = pitch;
 
                 speech.onend = () => {
                     speaking = false;
@@ -726,8 +692,6 @@
                 updateDiff();
 
                 if (currentScore !== undefined) {
-                    await speakInQueue(String(value), 1.0, 0.9);
-                    await new Promise(resolve => setTimeout(resolve, 500));
                     await speakInQueue(String(currentScore), 1.2, 0.9);
                 }
             });
@@ -820,9 +784,9 @@
                 timerState = 'start';
                 timerBtn.textContent = 'Start Time';
                 timerBtn.classList.remove('reset');
+                timerBtn.classList.add('start');
             }
         }
     </script>
 </body>
 </html>
-
