@@ -528,6 +528,7 @@
         let scoreHistory = [];
         const synth = window.speechSynthesis;
         let selectedVoice;
+        let isSpeaking = false;
 
         function updateDisplay() {
             document.getElementById('score1').textContent = score1;
@@ -551,15 +552,27 @@
             updateDisplay();
         }
 
-        function speak(text) {
-            // Check if a speech is already in progress and cancel it.
-            if (synth.speaking) {
+        function speak(text, callback) {
+            if (isSpeaking) {
                 synth.cancel();
             }
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = selectedVoice;
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
+            
+            utterance.onstart = () => { isSpeaking = true; };
+            utterance.onend = () => {
+                isSpeaking = false;
+                if (callback) {
+                    callback();
+                }
+            };
+            utterance.onerror = (event) => {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+                isSpeaking = false;
+            };
+
             synth.speak(utterance);
         }
 
@@ -580,12 +593,10 @@
                 default: pointSpeech = "";
             }
             
-            speak(pointSpeech);
-
-            setTimeout(() => {
+            speak(pointSpeech, () => {
                 let currentScore = player === 1 ? score1 : score2;
                 speak(`${currentScore}.`);
-            }, 500);
+            });
         }
 
         function resetAllScores() {
@@ -635,19 +646,14 @@
                 console.warn("ไม่พบเสียงผู้หญิง, ใช้เสียงเริ่มต้น");
             }
 
-            document.querySelectorAll('.ball').forEach(ball => {
-                // แก้ไขตรงนี้เพื่อรองรับทั้ง 'click' และ 'touchstart'
-                ball.addEventListener('click', () => {
+            document.addEventListener('touchstart', (e) => {
+                if (e.target.closest('.ball')) {
+                    e.preventDefault();
+                    const ball = e.target.closest('.ball');
                     const player = parseInt(ball.dataset.player);
                     const value = parseInt(ball.dataset.value);
                     handleBallClick(player, value);
-                });
-                ball.addEventListener('touchstart', (e) => {
-                    e.preventDefault(); // ป้องกันการซูมและการ scroll เมื่อแตะ
-                    const player = parseInt(e.currentTarget.dataset.player);
-                    const value = parseInt(e.currentTarget.dataset.value);
-                    handleBallClick(player, value);
-                });
+                }
             });
             
             document.getElementById('reset-button').addEventListener('click', resetAllScores);
