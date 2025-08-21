@@ -526,7 +526,6 @@
         let score1 = 0;
         let score2 = 0;
         let scoreHistory = [];
-
         const synth = window.speechSynthesis;
         let selectedVoice;
 
@@ -550,6 +549,43 @@
                 score2 += value;
             }
             updateDisplay();
+        }
+
+        function speak(text) {
+            // Check if a speech is already in progress and cancel it.
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.voice = selectedVoice;
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            synth.speak(utterance);
+        }
+
+        function handleBallClick(player, value) {
+            updateScores(player, value);
+
+            let pointSpeech;
+            switch (value) {
+                case 1: pointSpeech = "One"; break;
+                case 2: pointSpeech = "Two"; break;
+                case 3: pointSpeech = "Three"; break;
+                case 4: pointSpeech = "Four"; break;
+                case 5: pointSpeech = "Five"; break;
+                case 6: pointSpeech = "Six"; break;
+                case 7: pointSpeech = "Seven"; break;
+                case 8: pointSpeech = "Eight"; break;
+                case 10: pointSpeech = "Ten"; break;
+                default: pointSpeech = "";
+            }
+            
+            speak(pointSpeech);
+
+            setTimeout(() => {
+                let currentScore = player === 1 ? score1 : score2;
+                speak(`${currentScore}.`);
+            }, 500);
         }
 
         function resetAllScores() {
@@ -592,7 +628,7 @@
             }
         }
         
-        function setupSpeech() {
+        function setupSpeechAndListeners() {
             const voices = synth.getVoices();
             selectedVoice = voices.find(v => v.name.includes('female') || v.name.includes('femelle') || v.lang.startsWith('en') && v.name.includes('female'));
             if (!selectedVoice) {
@@ -600,52 +636,17 @@
             }
 
             document.querySelectorAll('.ball').forEach(ball => {
+                // แก้ไขตรงนี้เพื่อรองรับทั้ง 'click' และ 'touchstart'
                 ball.addEventListener('click', () => {
                     const player = parseInt(ball.dataset.player);
                     const value = parseInt(ball.dataset.value);
-
-                    // อัปเดตคะแนนทันที
-                    updateScores(player, value);
-
-                    // ยกเลิกเสียงที่กำลังพูดอยู่
-                    if (synth.speaking) {
-                        synth.cancel();
-                    }
-
-                    let pointSpeech;
-                    switch (value) {
-                        case 1: pointSpeech = "One"; break;
-                        case 2: pointSpeech = "Two"; break;
-                        case 3: pointSpeech = "Three"; break;
-                        case 4: pointSpeech = "Four"; break;
-                        case 5: pointSpeech = "Five"; break;
-                        case 6: pointSpeech = "Six"; break;
-                        case 7: pointSpeech = "Seven"; break;
-                        case 8: pointSpeech = "Eight"; break;
-                        case 10: pointSpeech = "Ten"; break;
-                        default: pointSpeech = "";
-                    }
-                    
-                    const pointUtterance = new SpeechSynthesisUtterance(pointSpeech);
-                    pointUtterance.voice = selectedVoice;
-                    pointUtterance.rate = 1.0;
-                    pointUtterance.pitch = 1.0;
-
-                    // เมื่อพูดแต้มจบ ให้หน่วงเวลาเล็กน้อยแล้วพูดคะแนนรวม
-                    pointUtterance.onend = () => {
-                        setTimeout(() => {
-                            let currentScore = player === 1 ? score1 : score2;
-                            let totalSpeech = `${currentScore}.`;
-                            const totalUtterance = new SpeechSynthesisUtterance(totalSpeech);
-                            totalUtterance.voice = selectedVoice;
-                            totalUtterance.rate = 1.0;
-                            totalUtterance.pitch = 1.0;
-                            synth.speak(totalUtterance);
-                        }, 500);
-                    };
-
-                    // เรียก speak() โดยตรงใน Event Listener
-                    synth.speak(pointUtterance);
+                    handleBallClick(player, value);
+                });
+                ball.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // ป้องกันการซูมและการ scroll เมื่อแตะ
+                    const player = parseInt(e.currentTarget.dataset.player);
+                    const value = parseInt(e.currentTarget.dataset.value);
+                    handleBallClick(player, value);
                 });
             });
             
@@ -655,9 +656,9 @@
         }
 
         if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = setupSpeech;
+            synth.onvoiceschanged = setupSpeechAndListeners;
         } else {
-            setupSpeech();
+            setupSpeechAndListeners();
         }
     </script>
 </body>
