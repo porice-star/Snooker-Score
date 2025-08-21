@@ -29,6 +29,8 @@
             background-attachment: fixed;
             background-repeat: no-repeat;
             padding: 2vh 1vw;
+            -webkit-user-select: none; /* เพื่อป้องกันการเลือกข้อความบน iOS */
+            -webkit-tap-highlight-color: transparent; /* เพื่อลบไฮไลท์สีฟ้าเมื่อแตะ */
         }
 
         @media only screen and (max-device-width: 1366px) {
@@ -556,6 +558,7 @@
             if (isSpeaking) {
                 synth.cancel();
             }
+            
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = selectedVoice;
             utterance.rate = 1.0;
@@ -576,27 +579,43 @@
             synth.speak(utterance);
         }
 
-        function handleBallClick(player, value) {
-            updateScores(player, value);
+        function handleBallClick(target) {
+            const ball = target.closest('.ball');
+            if (ball) {
+                const player = parseInt(ball.dataset.player);
+                const value = parseInt(ball.dataset.value);
+                
+                updateScores(player, value);
 
-            let pointSpeech;
-            switch (value) {
-                case 1: pointSpeech = "One"; break;
-                case 2: pointSpeech = "Two"; break;
-                case 3: pointSpeech = "Three"; break;
-                case 4: pointSpeech = "Four"; break;
-                case 5: pointSpeech = "Five"; break;
-                case 6: pointSpeech = "Six"; break;
-                case 7: pointSpeech = "Seven"; break;
-                case 8: pointSpeech = "Eight"; break;
-                case 10: pointSpeech = "Ten"; break;
-                default: pointSpeech = "";
+                let pointSpeech;
+                switch (value) {
+                    case 1: pointSpeech = "One"; break;
+                    case 2: pointSpeech = "Two"; break;
+                    case 3: pointSpeech = "Three"; break;
+                    case 4: pointSpeech = "Four"; break;
+                    case 5: pointSpeech = "Five"; break;
+                    case 6: pointSpeech = "Six"; break;
+                    case 7: pointSpeech = "Seven"; break;
+                    case 8: pointSpeech = "Eight"; break;
+                    case 10: pointSpeech = "Ten"; break;
+                    default: pointSpeech = "";
+                }
+                
+                speak(pointSpeech, () => {
+                    let currentScore = player === 1 ? score1 : score2;
+                    speak(`${currentScore}.`);
+                });
             }
-            
-            speak(pointSpeech, () => {
-                let currentScore = player === 1 ? score1 : score2;
-                speak(`${currentScore}.`);
-            });
+        }
+        
+        function handleButtonClick(target) {
+            if (target.id === 'reset-button') {
+                resetAllScores();
+            } else if (target.id === 'finish-button') {
+                finishGame();
+            } else if (target.id === 'undo-button') {
+                undoLast();
+            }
         }
 
         function resetAllScores() {
@@ -645,20 +664,18 @@
             if (!selectedVoice) {
                 console.warn("ไม่พบเสียงผู้หญิง, ใช้เสียงเริ่มต้น");
             }
-
+            
             document.addEventListener('touchstart', (e) => {
-                if (e.target.closest('.ball')) {
-                    e.preventDefault();
-                    const ball = e.target.closest('.ball');
-                    const player = parseInt(ball.dataset.player);
-                    const value = parseInt(ball.dataset.value);
-                    handleBallClick(player, value);
-                }
+                e.preventDefault();
+                handleBallClick(e.target);
+                handleButtonClick(e.target);
             });
             
-            document.getElementById('reset-button').addEventListener('click', resetAllScores);
-            document.getElementById('finish-button').addEventListener('click', finishGame);
-            document.getElementById('undo-button').addEventListener('click', undoLast);
+            document.addEventListener('click', (e) => {
+                // สำหรับการทำงานบน desktop และ fallback
+                handleBallClick(e.target);
+                handleButtonClick(e.target);
+            });
         }
 
         if (synth.onvoiceschanged !== undefined) {
