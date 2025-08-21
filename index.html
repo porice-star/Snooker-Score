@@ -529,36 +529,6 @@
 
         const synth = window.speechSynthesis;
         let selectedVoice;
-        let audioCtx;
-
-        function createClickSound() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function speakText(text) {
-            if (synth.speaking) {
-                synth.cancel();
-            }
-            const speakUtterance = new SpeechSynthesisUtterance(text);
-            if (selectedVoice) {
-                speakUtterance.voice = selectedVoice;
-            }
-            speakUtterance.rate = 1.0;
-            speakUtterance.pitch = 1.0;
-            synth.speak(speakUtterance);
-        }
 
         function updateDisplay() {
             document.getElementById('score1').textContent = score1;
@@ -582,54 +552,7 @@
             updateDisplay();
         }
 
-        function speakScore(value, player) {
-            // อัปเดตคะแนนทันทีที่กดปุ่ม
-            updateScores(player, value);
-            createClickSound();
-
-            // ยกเลิกเสียงที่กำลังพูดอยู่
-            if (synth.speaking) {
-                synth.cancel();
-            }
-            
-            let pointSpeech;
-            switch (value) {
-                case 1: pointSpeech = "One"; break;
-                case 2: pointSpeech = "Two"; break;
-                case 3: pointSpeech = "Three"; break;
-                case 4: pointSpeech = "Four"; break;
-                case 5: pointSpeech = "Five"; break;
-                case 6: pointSpeech = "Six"; break;
-                case 7: pointSpeech = "Seven"; break;
-                case 8: pointSpeech = "Eight"; break;
-                case 10: pointSpeech = "Ten"; break;
-                default: pointSpeech = "";
-            }
-            
-            // พูดแต้ม
-            const pointUtterance = new SpeechSynthesisUtterance(pointSpeech);
-            pointUtterance.voice = selectedVoice;
-            pointUtterance.rate = 1.0;
-            pointUtterance.pitch = 1.0;
-            
-            // เมื่อพูดแต้มจบ ให้หน่วงเวลาเล็กน้อยแล้วพูดคะแนนรวม
-            pointUtterance.onend = () => {
-                setTimeout(() => {
-                    let currentScore = player === 1 ? score1 : score2;
-                    let totalSpeech = `${currentScore}.`;
-                    const totalUtterance = new SpeechSynthesisUtterance(totalSpeech);
-                    totalUtterance.voice = selectedVoice;
-                    totalUtterance.rate = 1.0;
-                    totalUtterance.pitch = 1.0;
-                    synth.speak(totalUtterance);
-                }, 500); // หน่วงเวลา 500 มิลลิวินาที
-            };
-
-            synth.speak(pointUtterance);
-        }
-
         function resetAllScores() {
-            createClickSound();
             scoreHistory.push({
                 score1: score1,
                 score2: score2,
@@ -642,7 +565,6 @@
         }
 
         function finishGame() {
-            createClickSound();
             scoreHistory.push({
                 score1: score1,
                 score2: score2,
@@ -660,7 +582,6 @@
         }
 
         function undoLast() {
-            createClickSound();
             if (scoreHistory.length > 0) {
                 const lastState = scoreHistory.pop();
                 score1 = lastState.score1;
@@ -673,7 +594,6 @@
         
         function setupSpeech() {
             const voices = synth.getVoices();
-            
             selectedVoice = voices.find(v => v.name.includes('female') || v.name.includes('femelle') || v.lang.startsWith('en') && v.name.includes('female'));
             if (!selectedVoice) {
                 console.warn("ไม่พบเสียงผู้หญิง, ใช้เสียงเริ่มต้น");
@@ -683,7 +603,49 @@
                 ball.addEventListener('click', () => {
                     const player = parseInt(ball.dataset.player);
                     const value = parseInt(ball.dataset.value);
-                    speakScore(value, player);
+
+                    // อัปเดตคะแนนทันที
+                    updateScores(player, value);
+
+                    // ยกเลิกเสียงที่กำลังพูดอยู่
+                    if (synth.speaking) {
+                        synth.cancel();
+                    }
+
+                    let pointSpeech;
+                    switch (value) {
+                        case 1: pointSpeech = "One"; break;
+                        case 2: pointSpeech = "Two"; break;
+                        case 3: pointSpeech = "Three"; break;
+                        case 4: pointSpeech = "Four"; break;
+                        case 5: pointSpeech = "Five"; break;
+                        case 6: pointSpeech = "Six"; break;
+                        case 7: pointSpeech = "Seven"; break;
+                        case 8: pointSpeech = "Eight"; break;
+                        case 10: pointSpeech = "Ten"; break;
+                        default: pointSpeech = "";
+                    }
+                    
+                    const pointUtterance = new SpeechSynthesisUtterance(pointSpeech);
+                    pointUtterance.voice = selectedVoice;
+                    pointUtterance.rate = 1.0;
+                    pointUtterance.pitch = 1.0;
+
+                    // เมื่อพูดแต้มจบ ให้หน่วงเวลาเล็กน้อยแล้วพูดคะแนนรวม
+                    pointUtterance.onend = () => {
+                        setTimeout(() => {
+                            let currentScore = player === 1 ? score1 : score2;
+                            let totalSpeech = `${currentScore}.`;
+                            const totalUtterance = new SpeechSynthesisUtterance(totalSpeech);
+                            totalUtterance.voice = selectedVoice;
+                            totalUtterance.rate = 1.0;
+                            totalUtterance.pitch = 1.0;
+                            synth.speak(totalUtterance);
+                        }, 500);
+                    };
+
+                    // เรียก speak() โดยตรงใน Event Listener
+                    synth.speak(pointUtterance);
                 });
             });
             
