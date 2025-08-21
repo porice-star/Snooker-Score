@@ -21,14 +21,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* จัดให้อยู่ด้านบนและล่าง */
+            justify-content: space-between;
             box-sizing: border-box;
             background-image: url('Snooker BG/PhotoBG.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
-            padding: 2vh 1vw; /* เพิ่ม padding โดยรวม */
+            padding: 2vh 1vw;
         }
 
         @media only screen and (max-device-width: 1366px) {
@@ -107,7 +107,6 @@
             height: 100%;
         }
         
-        /* แก้ไขเพื่อรวม player-box เข้าไปใน player */
         .player .player-box {
             border: 2px solid rgba(0, 234, 255, 0.4);
             border-radius: 15px;
@@ -118,7 +117,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 100%; /* ให้ player-box สูงเท่ากับ player */
+            height: 100%;
             box-sizing: border-box;
         }
 
@@ -148,15 +147,15 @@
         .score {
             font-family: 'Share Tech Mono', monospace;
             font-size: 15em;
-            background-color: #0d1a26;
+            background-color: #33ff66;
             border-radius: 12px;
             padding: 2.5vh 0;
             width: 100%;
-            color: #00eaff;
+            color: #ffffff;
             user-select: none;
             margin-bottom: 2vh;
             box-shadow: inset 0 -6px 15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 234, 255, 0.3);
-            text-shadow: 0 0 15px #00eaff;
+            text-shadow: none;
         }
 
         .balls {
@@ -356,7 +355,7 @@
                 font-size: 2em;
             }
             .scoreboard {
-                flex-grow: 1; /* ให้ scoreboard ขยายเต็มพื้นที่ที่เหลือ */
+                flex-grow: 1;
                 padding: 2vh 2vw;
                 gap: 2vw;
                 margin-bottom: 0;
@@ -368,7 +367,7 @@
                 margin-bottom: 0;
             }
             .player-box {
-                height: auto; /* ปรับให้ player-box ไม่ยืดเกินไป */
+                height: auto;
                 justify-content: center;
             }
             .score {
@@ -528,22 +527,37 @@
         let score2 = 0;
         let scoreHistory = [];
 
-        function updateScores(player, value) {
-            const lastState = {
-                score1: score1,
-                score2: score2,
-                game1: parseInt(document.getElementById('player1-game-total').value),
-                game2: parseInt(document.getElementById('player2-game-total').value),
-            };
-            scoreHistory.push(lastState);
+        const synth = window.speechSynthesis;
+        let selectedVoice;
+        let audioCtx;
 
-            if (player === 1) {
-                score1 += value;
-            } else if (player === 2) {
-                score2 += value;
+        function createClickSound() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        }
 
-            updateDisplay();
+        function speakText(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const speakUtterance = new SpeechSynthesisUtterance(text);
+            if (selectedVoice) {
+                speakUtterance.voice = selectedVoice;
+            }
+            speakUtterance.rate = 1.0;
+            speakUtterance.pitch = 1.0;
+            synth.speak(speakUtterance);
         }
 
         function updateDisplay() {
@@ -552,7 +566,70 @@
             document.getElementById('diff').textContent = Math.abs(score1 - score2);
         }
 
+        function updateScores(player, value) {
+            const lastState = {
+                score1: score1,
+                score2: score2,
+                game1: parseInt(document.getElementById('player1-game-total').value),
+                game2: parseInt(document.getElementById('player2-game-total').value),
+            };
+            scoreHistory.push(lastState);
+            if (player === 1) {
+                score1 += value;
+            } else if (player === 2) {
+                score2 += value;
+            }
+            updateDisplay();
+        }
+
+        function speakScore(value, player) {
+            // อัปเดตคะแนนทันทีที่กดปุ่ม
+            updateScores(player, value);
+            createClickSound();
+
+            // ยกเลิกเสียงที่กำลังพูดอยู่
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            
+            let pointSpeech;
+            switch (value) {
+                case 1: pointSpeech = "One"; break;
+                case 2: pointSpeech = "Two"; break;
+                case 3: pointSpeech = "Three"; break;
+                case 4: pointSpeech = "Four"; break;
+                case 5: pointSpeech = "Five"; break;
+                case 6: pointSpeech = "Six"; break;
+                case 7: pointSpeech = "Seven"; break;
+                case 8: pointSpeech = "Eight"; break;
+                case 10: pointSpeech = "Ten"; break;
+                default: pointSpeech = "";
+            }
+            
+            // พูดแต้ม
+            const pointUtterance = new SpeechSynthesisUtterance(pointSpeech);
+            pointUtterance.voice = selectedVoice;
+            pointUtterance.rate = 1.0;
+            pointUtterance.pitch = 1.0;
+            
+            // เมื่อพูดแต้มจบ ให้หน่วงเวลาเล็กน้อยแล้วพูดคะแนนรวม
+            pointUtterance.onend = () => {
+                setTimeout(() => {
+                    let currentScore = player === 1 ? score1 : score2;
+                    let totalSpeech = `${currentScore}.`;
+                    const totalUtterance = new SpeechSynthesisUtterance(totalSpeech);
+                    totalUtterance.voice = selectedVoice;
+                    totalUtterance.rate = 1.0;
+                    totalUtterance.pitch = 1.0;
+                    synth.speak(totalUtterance);
+                }, 500); // หน่วงเวลา 500 มิลลิวินาที
+            };
+
+            synth.speak(pointUtterance);
+        }
+
         function resetAllScores() {
+            createClickSound();
             scoreHistory.push({
                 score1: score1,
                 score2: score2,
@@ -565,6 +642,7 @@
         }
 
         function finishGame() {
+            createClickSound();
             scoreHistory.push({
                 score1: score1,
                 score2: score2,
@@ -582,6 +660,7 @@
         }
 
         function undoLast() {
+            createClickSound();
             if (scoreHistory.length > 0) {
                 const lastState = scoreHistory.pop();
                 score1 = lastState.score1;
@@ -591,19 +670,33 @@
                 updateDisplay();
             }
         }
+        
+        function setupSpeech() {
+            const voices = synth.getVoices();
+            
+            selectedVoice = voices.find(v => v.name.includes('female') || v.name.includes('femelle') || v.lang.startsWith('en') && v.name.includes('female'));
+            if (!selectedVoice) {
+                console.warn("ไม่พบเสียงผู้หญิง, ใช้เสียงเริ่มต้น");
+            }
 
-        document.querySelectorAll('.ball').forEach(ball => {
-            ball.addEventListener('click', () => {
-                const player = parseInt(ball.dataset.player);
-                const value = parseInt(ball.dataset.value);
-                updateScores(player, value);
+            document.querySelectorAll('.ball').forEach(ball => {
+                ball.addEventListener('click', () => {
+                    const player = parseInt(ball.dataset.player);
+                    const value = parseInt(ball.dataset.value);
+                    speakScore(value, player);
+                });
             });
-        });
+            
+            document.getElementById('reset-button').addEventListener('click', resetAllScores);
+            document.getElementById('finish-button').addEventListener('click', finishGame);
+            document.getElementById('undo-button').addEventListener('click', undoLast);
+        }
 
-        document.getElementById('reset-button').addEventListener('click', resetAllScores);
-        document.getElementById('finish-button').addEventListener('click', finishGame);
-        document.getElementById('undo-button').addEventListener('click', undoLast);
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = setupSpeech;
+        } else {
+            setupSpeech();
+        }
     </script>
 </body>
 </html>
-
