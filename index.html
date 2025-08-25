@@ -113,6 +113,9 @@
 
         .game-score > div {
             margin: 0 1.5vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .game-score h2 {
@@ -122,12 +125,15 @@
             color: #e0e0e0;
         }
 
+        /* ปรับปรุงสไตล์สำหรับ input ของคะแนนรวม Frame */
         .game-score input {
             font-family: 'Share Tech Mono', monospace;
             font-size: 2.5em;
             text-align: center;
-            width: 5vw;
-            height: 5vw;
+            /* ปรับ width ให้รองรับเลขสองหลักได้ดีขึ้น */
+            width: 8vw; 
+            min-width: 50px; /* กำหนดขั้นต่ำ */
+            height: auto;
             padding: 8px;
             border-radius: 8px;
             border: 2px solid #00eaff;
@@ -136,11 +142,8 @@
             user-select: auto;
             box-shadow: inset 0 0 10px rgba(0, 234, 255, 0.6), 0 0 10px rgba(0, 234, 255, 0.4);
             box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.2;
         }
+
 
         .scoreboard {
             background-color: rgba(28, 70, 45, 0.8);
@@ -820,9 +823,9 @@
                 timerState = 'start';
                 timerBtn.textContent = 'Start Time';
                 timerBtn.classList.remove('reset');
+                timerBtn.classList.add('stop');
             }
         }
     </script>
 </body>
 </html>
-
